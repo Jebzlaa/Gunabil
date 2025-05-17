@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Selamat Ulang Tahun!</title>
+  <style>
+    body {
+      background: skyblue;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      overflow: hidden;
+      text-align: center;
+      transition: background 1s;
+    }
+
+    .lilin {
+      width: 20px;
+      height: 70px;
+      background: white;
+      margin: auto;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .api {
+      width: 12px;
+      height: 12px;
+      background: yellow;
+      border-radius: 50%;
+      position: absolute;
+      top: -14px;
+      left: -1px;
+      animation: nyala 0.3s infinite alternate;
+    }
+
+    .kue {
+      position: absolute;
+      bottom: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .lapis-bawah {
+      width: 160px;
+      height: 80px;
+      background: pink;
+      margin: auto;
+      border-radius: 10px;
+    }
+
+    .lapis-atas {
+      width: 130px;
+      height: 50px;
+      background: hotpink;
+      margin: auto;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    @keyframes nyala {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-2px) scale(1.2); }
+    }
+
+    .balon {
+      position: absolute;
+      width: 80px;
+      height: 100px;
+      background-color: red;
+      border-radius: 50% 50% 45% 45%;
+      animation: terbang 10s infinite linear;
+    }
+
+    .balon::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      width: 2px;
+      height: 40px;
+      background: black;
+    }
+
+    @keyframes terbang {
+      0% { top: 100%; }
+      100% { top: -200px; }
+    }
+
+    .area-ledakan {
+      position: absolute;
+      bottom: 250px;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .percikan {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: yellow;
+      border-radius: 50%;
+      opacity: 1;
+      animation: keluar 0.8s forwards;
+    }
+
+    @keyframes keluar {
+      to {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+      }
+    }
+
+    .pesan {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 40px;
+      text-shadow: 2px 2px black;
+    }
+
+    #mulai {
+      margin-top: 50px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      background-color: gold;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* === POPUP === */
+    #popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      visibility: hidden;
+    }
+
+    #popup div {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    #popup button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: hotpink;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* === BACKGROUND UCAPAN === */
+    #background-ucapan {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 192, 203, 0.2);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 5000;
+      flex-direction: column;
+      text-align: center;
+      font-size: 48px;
+      color: white;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px hotpink;
+      pointer-events: none;
+    }
+
+    #background-ucapan img {
+      width: 200px;
+      margin-top: 20px;
+    }
+
+    /* === STIKER GERAK === */
+    #stiker-gerak {
+      position: fixed;
+      top: 20px;
+      width: 100px;
+      z-index: 5000;
+      display: none;
+      animation: gerakKananKiri 4s ease-in-out infinite;
+    }
+
+    @keyframes gerakKananKiri {
+      0% { left: 0; }
+      50% { left: calc(100% - 100px); }
+      100% { left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Stiker Gerak -->
+  <img id="stiker-gerak" src="happy-birthday.png" alt="Stiker Ulang Tahun">
+
+  <!-- Background Ucapan -->
+  <div id="background-ucapan">
+    Selamat Ulang Tahun 🎉
+    <img src="happy-birthday.png" alt="Happy Birthday Sticker">
+  </div>
+
+  <!-- Kue Ulang Tahun -->
+  <div class="kue">
+    <div class="lilin">
+      <div class="api"></div>
+    </div>
+    <div class="lapis-atas"></div>
+    <div class="lapis-bawah"></div>
+  </div>
+
+  <!-- Ledakan -->
+  <div id="ledakan-kiri" class="area-ledakan" style="left: 120px;"></div>
+  <div id="ledakan-kanan" class="area-ledakan" style="right: 120px;"></div>
+
+  <!-- Balon -->
+  <div class="balon" style="left: 100px; background: red;"></div>
+  <div class="balon" style="left: 800px; background: blue; animation-delay: 5s;"></div>
+
+  <!-- Tombol Mulai -->
+  <button id="mulai">Mulai Perayaan 🎉</button>
+
+  <!-- Musik -->
+  <audio id="musik" autoplay loop>
+    <source src="Selamat Ulang Tahun [Jamrud].mp3" type="audio/mpeg">
+    Browser tidak mendukung audio.
+  </audio>
+
+  <!-- POPUP UCAPAN -->
+  <div id="popup">
+    <div>
+      <h2>🎂 Selamat Ulang Tahun, Jihan! 🎉</h2>
+      <p style="font-size: 18px;">Semoga hari-harimu selalu penuh kebahagiaan, kesehatan, dan keberkahan. Tetap semangat yaa!</p>
+      <button id="tutupPopup">Klik 🎂🎂🎂</button>
+    </div>
+  </div>
+
+  <script>
+    function ledakkan(targetId, jumlah = 20) {
+      const area = document.getElementById(targetId);
+
+      for (let i = 0; i < jumlah; i++) {
+        const partikel = document.createElement("div");
+        partikel.className = "percikan";
+
+        const sudut = Math.random() * 2 * Math.PI;
+        const jarak = Math.random() * 80 + 20;
+        const dx = Math.cos(sudut) * jarak + "px";
+        const dy = Math.sin(sudut) * jarak + "px";
+
+        const warna = ["yellow", "red", "cyan", "lime", "magenta", "orange"];
+        partikel.style.background = warna[Math.floor(Math.random() * warna.length)];
+
+        partikel.style.setProperty("--x", dx);
+        partikel.style.setProperty("--y", dy);
+
+        area.appendChild(partikel);
+
+        setTimeout(() => {
+          partikel.remove();
+        }, 1000);
+      }
+
+      const bg = ["skyblue", "lightpink", "lightyellow", "lavender", "lightgreen"];
+      document.body.style.background = bg[Math.floor(Math.random() * bg.length)];
+    }
+
+    // Tampilkan popup saat tombol "Mulai" diklik
+    document.getElementById("mulai").addEventListener("click", function () {
+      document.getElementById("popup").style.visibility = "visible";
+    });
+
+    // Tutup popup dan mulai perayaan
+    document.getElementById("tutupPopup").addEventListener("click", function () {
+      document.getElementById("popup").style.visibility = "hidden";
+      document.getElementById("mulai").style.display = "none";
+      document.getElementById("musik").play();
+
+      // Tampilkan latar dan stiker
+      document.getElementById("background-ucapan").style.display = "flex";
+      document.getElementById("stiker-gerak").style.display = "block";
+    });
+
+    // Efek ledakan otomatis
+    setInterval(() => {
+      ledakkan("ledakan-kiri");
+      setTimeout(() => {
+        ledakkan("ledakan-kanan");
+      }, 1000);
+    }, 2500);
+  </script>
+</body>
+</html>
